@@ -501,8 +501,12 @@ impl ContentVisitor for ContentConverter<'_> {
     }
 
     fn visit_primes(&mut self, content: &Content) -> Node {
-        // unsupported
-        unimplemented!()
+        let elem = content.to_primes();
+
+        let node = katex::RawBuilder::default()
+            .string("\\prime".repeat(*elem.count()))
+            .build().unwrap().into_node();
+        Node::Node(node)
     }
 
     fn visit_accent(&mut self, content: &Content) -> Node {
