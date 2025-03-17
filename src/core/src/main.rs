@@ -1,28 +1,27 @@
 // Mainly for debug purposes
 
-use comemo::Prehashed;
 use comemo::Track;
-use typst;
+use typst::utils::LazyHash;
 use core::convert;
 use typst::World;
 
 struct FakeWorld {
-    library: Prehashed<typst::Library>,
+    library: LazyHash<typst::Library>,
 }
 
 impl FakeWorld {
     fn new() -> Self {
         FakeWorld {
-            library: Prehashed::new(typst::Library::build()),
+            library: LazyHash::new(typst::Library::builder().build()),
         }
     }
 }
 
 impl World for FakeWorld {
-    fn library(&self) -> &Prehashed<typst::Library> {
+    fn library(&self) -> &LazyHash<typst::Library> {
         &self.library
     }
-    fn book(&self) ->  &Prehashed<typst::text::FontBook> {
+    fn book(&self) -> &LazyHash<typst::text::FontBook> {
         unimplemented!();
     }
     fn file(&self, id: typst_syntax::FileId) -> typst::diag::FileResult<typst::foundations::Bytes> {
@@ -31,10 +30,7 @@ impl World for FakeWorld {
     fn font(&self, index: usize) -> Option<typst::text::Font> {
         unimplemented!();
     }
-    fn main(&self) -> typst_syntax::Source {
-        unimplemented!();
-    }
-    fn packages(&self) -> &[(typst_syntax::PackageSpec,Option<typst::diag::EcoString>)] {
+    fn main(&self) -> typst_syntax::FileId {
         unimplemented!();
     }
     fn source(&self, id: typst_syntax::FileId) -> typst::diag::FileResult<typst_syntax::Source> {
@@ -45,30 +41,22 @@ impl World for FakeWorld {
     }
 }
 
-fn eval(world: &dyn World, string: &str) -> typst::foundations::Content {
-    // Make engine
-    let introspector = typst::introspection::Introspector::default();
-    let mut locator = typst::introspection::Locator::default();
-    let mut tracer = typst::eval::Tracer::default();
-
-    let engine = typst::engine::Engine {
-        world: world.track(),
-        introspector: introspector.track(),
-        route: typst::engine::Route::default(),
-        locator: &mut locator,
-        tracer: tracer.track_mut(),
-    };
-
-    let result = typst::eval::eval_string(
+pub fn eval(world: &dyn typst::World, string: &str) -> Result<typst::foundations::Content, String> {
+    let result = typst_eval::eval_string(
+        &typst::ROUTINES,
         world.track(),
         string,
         typst::syntax::Span::detached(),
-        typst::eval::EvalMode::Math,
-        world.library().math.scope().clone()
-    ).unwrap();
+        typst_eval::EvalMode::Math,
+        world.library().math.scope().clone(),
+    );
+
     match result {
-        typst::foundations::Value::Content(content) => content,
-        _ => panic!(),
+        Ok(value) => match value {
+            typst::foundations::Value::Content(content) => Ok(content),
+            _ => Err("Expected content result.".to_string()),
+        },
+        Err(err) => Err(err[0].message.to_string()),
     }
 }
 
@@ -134,9 +122,9 @@ fn eval(world: &dyn World, string: &str) -> typst::foundations::Content {
 
 pub fn main() {
     // Try to construct a MathContext object.
-    let mut world = FakeWorld::new();
-    let content = eval(&world, "||x||");
-    let math: &typst::math::EquationElem = content.to::<typst::math::EquationElem>().unwrap();
+    let world = FakeWorld::new();
+    let content = eval(&world, "bb(italic(upright(a))/bold(x))").unwrap();
+    let math: &typst::math::EquationElem = content.to_packed::<typst::math::EquationElem>().unwrap();
     println!("{:#?}", math);
     println!("{:#?}", convert(&content));
 }

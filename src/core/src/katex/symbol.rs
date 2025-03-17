@@ -40,17 +40,17 @@ pub enum NonAtomGroup {
     TextOrd,
 }
 
-impl<'a> Symbol {
+impl Symbol {
     pub fn new(mode: Mode, font: Font, group: Group, name: char) -> Self {
         Self {
-            mode: mode,
-            font: font,
-            group: group,
-            name: name
+            mode,
+            font,
+            group,
+            name
         }
     }
 
-    pub fn create_node(self: Self) -> Node {
+    pub fn create_node(self) -> Node {
         let mut name = self.name.to_string();
         if name == "{" {
             name = "\\{".to_string();
@@ -752,6 +752,6 @@ impl<'a> Symbol {
         if mode == Mode::Math && name == 'þ' { return Symbol::new(Mode::Math, Font::Main, Group::NonAtom(NonAtomGroup::MathOrd), 'þ'); }
         if mode == Mode::Text && name == 'þ' { return Symbol::new(Mode::Text, Font::Main, Group::NonAtom(NonAtomGroup::TextOrd), 'þ'); }
         //// --------------------------- ////
-        return Symbol::new(mode, Font::Main, Group::NonAtom(NonAtomGroup::TextOrd), name);
+        Symbol::new(mode, Font::Main, Group::NonAtom(NonAtomGroup::TextOrd), name)
     }
 }

@@ -24,7 +24,7 @@ impl Node {
             Node::Array(array) => {
                 if array.len() == 1 {
                     // TODO: Must check if this code makes sense
-                    Ok(array.iter().next().cloned().unwrap())
+                    Ok(array.first().cloned().unwrap())
                 } else {
                     Err("Cannot convert an array with more than one element to a single node")
                 }

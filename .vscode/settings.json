@@ -1,0 +1,5 @@
+{
+  "makefile.configureOnOpen": false,
+  "editor.formatOnSave": false,
+  "rust-analyzer.linkedProjects": ["src/core/Cargo.toml"]
+}

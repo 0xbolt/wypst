@@ -37,7 +37,7 @@ impl ArrayConstructor {
     }
 
     pub fn count_rows(&self) -> usize {
-        self.body.iter().count()
+        self.body.len()
     }
 
     pub fn cols_leftright_align(&mut self) -> &mut Self {

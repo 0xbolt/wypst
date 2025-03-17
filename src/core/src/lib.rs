@@ -1,13 +1,10 @@
 use wasm_bindgen::prelude::*;
 use serde_wasm_bindgen::to_value;
-use serde_json;
-use typst;
 
 mod converter;
 mod katex;
 mod utils;
 mod node;
-mod ext;
 mod content;
 mod symbol;
 
@@ -36,7 +33,7 @@ pub fn parse_tree(expression: &str) -> Result<JsValue, String> {
 pub fn typst_content_tree(expression: &str) -> Result<String, String> {
     let content = content_tree(expression);
     match content {
-        Ok(tree) => Ok(format!("{:#?}", tree).into()),
+        Ok(tree) => Ok(format!("{:#?}", tree)),
         Err(err) => Err(err),
     }
 }

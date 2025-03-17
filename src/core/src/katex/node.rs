@@ -12,6 +12,7 @@ pub type NodeArray2D = Vec<Vec<Node>>;
 
 #[derive(Clone, Serialize)]
 #[serde(tag = "type", rename_all = "lowercase")]
+#[allow(unused)]
 pub enum Node {
     Array(Array),
     CdLabel(CdLabel),
@@ -323,6 +324,7 @@ pub struct OpToken {
 }
 
 #[derive(Clone, Serialize, Builder)]
+#[serde(rename_all = "camelCase")]
 pub struct Accent {
     #[builder(default = "Mode::Math")]
     pub mode: Mode,
@@ -337,6 +339,7 @@ pub struct Accent {
 }
 
 #[derive(Clone, Serialize, Builder)]
+#[serde(rename_all = "camelCase")]
 pub struct AccentUnder {
     #[builder(default = "Mode::Math")]
     pub mode: Mode,
@@ -806,7 +809,7 @@ into_node!(
 
 impl std::fmt::Debug for Node {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        write!(f, "{}", serde_json::to_value(&self).unwrap())
+        write!(f, "{}", serde_json::to_value(self).unwrap())
     }
 }
 

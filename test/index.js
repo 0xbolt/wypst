@@ -40,7 +40,7 @@ async function wypstRender() {
     let wypstOutput = wypstDiv.querySelector('#output');
     let typstOutput = typstDiv.querySelector('#output');
 
-    await wypst.init();
+    await wypst.initialize();
     input.addEventListener('input', async function() {
         // Print Typst parse tree (in KaTeX representation)
         try {
@@ -64,7 +64,7 @@ async function wypstRender() {
         // Render the equation
         try {
             wypst.render(input.value, renderDiv, {displayMode: true});
-        } catch (error) { }
+        } catch (error) {}
     });
 }
 wypstRender()
