@@ -1,7 +1,0 @@
-body {
-    display: flex;
-}
-
-#katex, #typst, #wypst {
-    flex: 1;
-}
